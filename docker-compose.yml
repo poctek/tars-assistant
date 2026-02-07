@@ -1,0 +1,10 @@
+services:
+  nanoclaw:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./data:/app/data
+      - ./groups:/app/groups
+      - ./store:/app/store
+      - /var/run/docker.sock:/var/run/docker.sock
