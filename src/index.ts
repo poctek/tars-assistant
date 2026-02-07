@@ -623,10 +623,20 @@ function ensureDockerAvailable(): void {
       stdio: ['pipe', 'pipe', 'pipe'],
       encoding: 'utf-8',
     });
+    let ownContainerName = '';
+    try {
+      const hostname = (process.env.HOSTNAME || '').trim();
+      if (hostname) {
+        ownContainerName = execSync(
+          `docker inspect ${hostname} --format {{.Name}}`,
+          { stdio: ['pipe', 'pipe', 'pipe'], encoding: 'utf-8', timeout: 3000 },
+        ).trim().replace(/^\//, '');
+      }
+    } catch {}
     const stale = output
       .split('\n')
       .map((n) => n.trim())
-      .filter((n) => n.startsWith('nanoclaw-'));
+      .filter((n) => n.startsWith('nanoclaw-') && n !== ownContainerName);
     if (stale.length > 0) {
       execSync(`docker rm -f ${stale.join(' ')}`, { stdio: 'pipe' });
       logger.info({ count: stale.length }, 'Cleaned up stale containers');
