@@ -1,10 +1,14 @@
 services:
   nanoclaw:
-    build: .
+    image: ghcr.io/poctek/nanoclaw:latest
     restart: unless-stopped
     env_file: .env
+    environment:
+      HOST_PROJECT_ROOT: /opt/nanoclaw
+      CONTAINER_IMAGE: ghcr.io/poctek/nanoclaw-agent:latest
     volumes:
       - ./data:/app/data
       - ./groups:/app/groups
       - ./store:/app/store
+      - ./.env:/app/.env:ro
       - /var/run/docker.sock:/var/run/docker.sock
